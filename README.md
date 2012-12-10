@@ -30,6 +30,10 @@ else {
 }
 ```
 
+## Isn't this the same thing as NSFetchedResultsController?
+
+Sort of - but not quite. For a start, NSFetchedResultsController is only available on iOS and it is specifically designed to work with UITableView data sources. It speaks in the domain of rows and sections, whereas this is more generic. You get your results, you can observe any changes to those results.
+
 ## License
 
 All code is licensed under the MIT license. See the LICENSE file for more details.
