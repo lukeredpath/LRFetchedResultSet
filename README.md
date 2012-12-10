@@ -1,11 +1,11 @@
 # LRFetchedResultSet - auto-updating Core Data fetch results
 
-Last night (at the time of writing), I tweeted this:
+Last night, I tweeted this:
 
 <blockquote class="twitter-tweet"><p>Wouldn’t it be nice if instead of returning an array of objects from a fetch, Core Data returned some kind of auto updating fetch result?</p>&mdash; Luke Redpath (@lukeredpath) <a href="https://twitter.com/lukeredpath/status/277934596811804673" data-datetime="2012-12-10T00:35:46+00:00">December 10, 2012</a></blockquote>
 <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-This is my attempt to satisfy my need.
+This is my attempt to satisfy that need.
 
 ## Getting started
 
