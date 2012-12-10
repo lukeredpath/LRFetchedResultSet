@@ -11,11 +11,15 @@
 		A386659B167617910099BD04 /* LRFetchedResultSet.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = A386659A167617910099BD04 /* LRFetchedResultSet.h */; };
 		A386659D167617910099BD04 /* LRFetchedResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = A386659C167617910099BD04 /* LRFetchedResultSet.m */; };
 		A38665A5167617910099BD04 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A38665A4167617910099BD04 /* SenTestingKit.framework */; };
-		A38665A7167617910099BD04 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A38665A6167617910099BD04 /* UIKit.framework */; };
 		A38665A8167617910099BD04 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A3866595167617910099BD04 /* Foundation.framework */; };
 		A38665AB167617910099BD04 /* libLRFetchedResultSet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A3866592167617910099BD04 /* libLRFetchedResultSet.a */; };
 		A38665B1167617910099BD04 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A38665AF167617910099BD04 /* InfoPlist.strings */; };
 		A38665B4167617910099BD04 /* LRFetchedResultSetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A38665B3167617910099BD04 /* LRFetchedResultSetTests.m */; };
+		A38665C11676180D0099BD04 /* CoreDataTestStack.m in Sources */ = {isa = PBXBuildFile; fileRef = A38665C01676180D0099BD04 /* CoreDataTestStack.m */; };
+		A38665C41676184D0099BD04 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A38665C31676184D0099BD04 /* CoreData.framework */; };
+		A38665C5167618560099BD04 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A38665C31676184D0099BD04 /* CoreData.framework */; };
+		A386662B1676191F0099BD04 /* libExpecta-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A38666251676190C0099BD04 /* libExpecta-iOS.a */; };
+		A386662E167619C20099BD04 /* LRManagedObjectModelBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = A386662D167619C20099BD04 /* LRManagedObjectModelBuilder.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,6 +29,34 @@
 			proxyType = 1;
 			remoteGlobalIDString = A3866591167617910099BD04;
 			remoteInfo = LRFetchedResultSet;
+		};
+		A38666221676190C0099BD04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A38666181676190C0099BD04 /* Expecta.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E9ACDF0C13B2DD520010F4D7;
+			remoteInfo = Expecta;
+		};
+		A38666241676190C0099BD04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A38666181676190C0099BD04 /* Expecta.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E93067CE13B2E6D100EA26FF;
+			remoteInfo = "Expecta-iOS";
+		};
+		A38666261676190C0099BD04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A38666181676190C0099BD04 /* Expecta.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E9ACDF1D13B2DD520010F4D7;
+			remoteInfo = ExpectaTests;
+		};
+		A38666281676190C0099BD04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A38666181676190C0099BD04 /* Expecta.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E93067DA13B2E6D100EA26FF;
+			remoteInfo = "Expecta-iOSTests";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -49,11 +81,17 @@
 		A386659C167617910099BD04 /* LRFetchedResultSet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LRFetchedResultSet.m; sourceTree = "<group>"; };
 		A38665A3167617910099BD04 /* LRFetchedResultSetTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LRFetchedResultSetTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A38665A4167617910099BD04 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
-		A38665A6167617910099BD04 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		A38665AE167617910099BD04 /* LRFetchedResultSetTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "LRFetchedResultSetTests-Info.plist"; sourceTree = "<group>"; };
 		A38665B0167617910099BD04 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		A38665B2167617910099BD04 /* LRFetchedResultSetTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LRFetchedResultSetTests.h; sourceTree = "<group>"; };
 		A38665B3167617910099BD04 /* LRFetchedResultSetTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LRFetchedResultSetTests.m; sourceTree = "<group>"; };
+		A38665BD167617E00099BD04 /* SenTestMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SenTestMacros.h; sourceTree = "<group>"; };
+		A38665BE167617E00099BD04 /* TestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestHelper.h; sourceTree = "<group>"; };
+		A38665BF1676180D0099BD04 /* CoreDataTestStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoreDataTestStack.h; path = Support/CoreDataTestStack.h; sourceTree = "<group>"; };
+		A38665C01676180D0099BD04 /* CoreDataTestStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CoreDataTestStack.m; path = Support/CoreDataTestStack.m; sourceTree = "<group>"; };
+		A38665C31676184D0099BD04 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		A38666181676190C0099BD04 /* Expecta.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Expecta.xcodeproj; path = Libraries/Expecta/Expecta.xcodeproj; sourceTree = "<group>"; };
+		A386662C167619C20099BD04 /* LRManagedObjectModelBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRManagedObjectModelBuilder.h; path = ../../AFIncrementalStore/AFIncrementalStore/AFIncrementalStoreTests/Support/LRManagedObjectModelBuilder.h; sourceTree = "<group>"; };
+		A386662D167619C20099BD04 /* LRManagedObjectModelBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRManagedObjectModelBuilder.m; path = ../../AFIncrementalStore/AFIncrementalStore/AFIncrementalStoreTests/Support/LRManagedObjectModelBuilder.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +99,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A38665C41676184D0099BD04 /* CoreData.framework in Frameworks */,
 				A3866596167617910099BD04 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -69,10 +108,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A386662B1676191F0099BD04 /* libExpecta-iOS.a in Frameworks */,
 				A38665A5167617910099BD04 /* SenTestingKit.framework in Frameworks */,
-				A38665A7167617910099BD04 /* UIKit.framework in Frameworks */,
 				A38665A8167617910099BD04 /* Foundation.framework in Frameworks */,
 				A38665AB167617910099BD04 /* libLRFetchedResultSet.a in Frameworks */,
+				A38665C5167618560099BD04 /* CoreData.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,9 +141,10 @@
 		A3866594167617910099BD04 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A38666181676190C0099BD04 /* Expecta.xcodeproj */,
+				A38665C31676184D0099BD04 /* CoreData.framework */,
 				A3866595167617910099BD04 /* Foundation.framework */,
 				A38665A4167617910099BD04 /* SenTestingKit.framework */,
-				A38665A6167617910099BD04 /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -129,8 +170,8 @@
 		A38665AC167617910099BD04 /* LRFetchedResultSetTests */ = {
 			isa = PBXGroup;
 			children = (
-				A38665B2167617910099BD04 /* LRFetchedResultSetTests.h */,
 				A38665B3167617910099BD04 /* LRFetchedResultSetTests.m */,
+				A38665C2167618150099BD04 /* Support */,
 				A38665AD167617910099BD04 /* Supporting Files */,
 			);
 			path = LRFetchedResultSetTests;
@@ -143,6 +184,30 @@
 				A38665AF167617910099BD04 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A38665C2167618150099BD04 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				A386662C167619C20099BD04 /* LRManagedObjectModelBuilder.h */,
+				A386662D167619C20099BD04 /* LRManagedObjectModelBuilder.m */,
+				A38665BF1676180D0099BD04 /* CoreDataTestStack.h */,
+				A38665C01676180D0099BD04 /* CoreDataTestStack.m */,
+				A38665BD167617E00099BD04 /* SenTestMacros.h */,
+				A38665BE167617E00099BD04 /* TestHelper.h */,
+			);
+			name = Support;
+			sourceTree = "<group>";
+		};
+		A38666191676190C0099BD04 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A38666231676190C0099BD04 /* libExpecta.a */,
+				A38666251676190C0099BD04 /* libExpecta-iOS.a */,
+				A38666271676190C0099BD04 /* ExpectaTests.octest */,
+				A38666291676190C0099BD04 /* Expecta-iOSTests.octest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -203,6 +268,12 @@
 			mainGroup = A3866587167617910099BD04;
 			productRefGroup = A3866593167617910099BD04 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = A38666191676190C0099BD04 /* Products */;
+					ProjectRef = A38666181676190C0099BD04 /* Expecta.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				A3866591167617910099BD04 /* LRFetchedResultSet */,
@@ -210,6 +281,37 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		A38666231676190C0099BD04 /* libExpecta.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libExpecta.a;
+			remoteRef = A38666221676190C0099BD04 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A38666251676190C0099BD04 /* libExpecta-iOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libExpecta-iOS.a";
+			remoteRef = A38666241676190C0099BD04 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A38666271676190C0099BD04 /* ExpectaTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ExpectaTests.octest;
+			remoteRef = A38666261676190C0099BD04 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A38666291676190C0099BD04 /* Expecta-iOSTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Expecta-iOSTests.octest";
+			remoteRef = A38666281676190C0099BD04 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A38665A0167617910099BD04 /* Resources */ = {
@@ -252,6 +354,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A38665B4167617910099BD04 /* LRFetchedResultSetTests.m in Sources */,
+				A38665C11676180D0099BD04 /* CoreDataTestStack.m in Sources */,
+				A386662E167619C20099BD04 /* LRManagedObjectModelBuilder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,7 +461,9 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "LRFetchedResultSet/LRFetchedResultSet-Prefix.pch";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Libraries/Expecta/src/**";
 				INFOPLIST_FILE = "LRFetchedResultSetTests/LRFetchedResultSetTests-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
 			};
@@ -372,7 +478,9 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "LRFetchedResultSet/LRFetchedResultSet-Prefix.pch";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Libraries/Expecta/src/**";
 				INFOPLIST_FILE = "LRFetchedResultSetTests/LRFetchedResultSetTests-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
 			};

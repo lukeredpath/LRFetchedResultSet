@@ -1,0 +1,3 @@
+[submodule "Libraries/Expecta"]
+	path = Libraries/Expecta
+	url = git://github.com/petejkim/expecta.git

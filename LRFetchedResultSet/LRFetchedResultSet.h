@@ -8,6 +8,19 @@
 
 #import <Foundation/Foundation.h>
 
+typedef void (^LRFetchedResultSetChangeBlock)(NSDictionary *changeBlock);
+
 @interface LRFetchedResultSet : NSObject
+
+@property (nonatomic, readonly) NSArray *objects;
+@property (nonatomic, readonly) NSInteger count;
+
+- (void)notifyChangesUsingBlock:(LRFetchedResultSetChangeBlock)changeBlock;
+
+@end
+
+@interface NSManagedObjectContext (LRFetchedResultSet)
+
+- (LRFetchedResultSet *)LR_executeFetchRequestAndReturnResultSet:(NSFetchRequest *)fetchRequest error:(NSError **)errorPtr;
 
 @end
