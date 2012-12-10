@@ -76,30 +76,27 @@
     [newObjects addObjectsFromArray:[relevantInsertedObjects allObjects]];
   }
   
-  NSMutableSet *relevantUpdatedObjects = [NSMutableSet set];
-  for (NSManagedObject *object in [changes objectForKey:NSUpdatedObjectsKey]) {
-    if ([_objects containsObject:object]) {
-      [relevantUpdatedObjects addObject:object];
-    }
-  }
-  [relevantChanges setObject:relevantUpdatedObjects forKey:NSUpdatedObjectsKey];
+  NSMutableSet *relevantUpdatedObjects = [[changes objectForKey:NSUpdatedObjectsKey] mutableCopy];
   
-  NSMutableSet *relevantRefreshedObjects = [NSMutableSet set];
-  for (NSManagedObject *object in [changes objectForKey:NSRefreshedObjectsKey]) {
-    if ([_objects containsObject:object]) {
-      [relevantRefreshedObjects addObject:object];
-    }
+  if (relevantUpdatedObjects) {
+    [relevantUpdatedObjects intersectSet:[NSSet setWithArray:self.objects]];
+    [relevantChanges setObject:relevantUpdatedObjects forKey:NSUpdatedObjectsKey];
   }
-  [relevantChanges setObject:relevantRefreshedObjects forKey:NSRefreshedObjectsKey];
   
-  NSMutableSet *relevantDeletedObjects = [NSMutableSet set];
-  for (NSManagedObject *object in [changes objectForKey:NSDeletedObjectsKey]) {
-    if ([_objects containsObject:object]) {
-      [relevantDeletedObjects addObject:object];
-    }
+  NSMutableSet *relevantRefreshedObjects = [[changes objectForKey:NSRefreshedObjectsKey] mutableCopy];
+  
+  if (relevantRefreshedObjects) {
+    [relevantRefreshedObjects intersectSet:[NSSet setWithArray:self.objects]];
+    [relevantChanges setObject:relevantRefreshedObjects forKey:NSRefreshedObjectsKey];
   }
-  [relevantChanges setObject:relevantDeletedObjects forKey:NSDeletedObjectsKey];
-  [newObjects removeObjectsInArray:[relevantDeletedObjects allObjects]];
+  
+  NSMutableSet *relevantDeletedObjects = [[changes objectForKey:NSDeletedObjectsKey] mutableCopy];
+  
+  if (relevantDeletedObjects) {
+    [relevantDeletedObjects intersectSet:[NSSet setWithArray:self.objects]];
+    [relevantChanges setObject:relevantDeletedObjects forKey:NSDeletedObjectsKey];
+    [newObjects removeObjectsInArray:[relevantDeletedObjects allObjects]];
+  }
   
   _objects = [newObjects sortedArrayUsingDescriptors:_fetchRequest.sortDescriptors];
   
