@@ -30,11 +30,6 @@
   return self;
 }
 
-- (NSInteger)count
-{
-  return _objects.count;
-}
-
 - (void)notifyChangesUsingBlock:(LRFetchedResultSetChangeBlock)changeBlock
 {
   self.changeBlock = changeBlock;
@@ -44,6 +39,18 @@
       [self handleChangesToManagedObjectContext:note.userInfo];
     }];
   }
+}
+
+#pragma mark - Collection access
+
+- (NSInteger)count
+{
+  return _objects.count;
+}
+
+- (id)objectAtIndexedSubscript:(NSUInteger)index
+{
+  return [_objects objectAtIndex:index];
 }
 
 #pragma mark - Private

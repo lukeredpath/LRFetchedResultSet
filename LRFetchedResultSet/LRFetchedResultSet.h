@@ -16,6 +16,7 @@ typedef void (^LRFetchedResultSetChangeBlock)(NSDictionary *changeBlock);
 @property (nonatomic, readonly) NSInteger count;
 
 - (void)notifyChangesUsingBlock:(LRFetchedResultSetChangeBlock)changeBlock;
+- (id)objectAtIndexedSubscript:(NSUInteger)index;
 
 @end
 

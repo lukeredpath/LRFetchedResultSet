@@ -21,6 +21,8 @@ DEFINE_TEST_CASE(LRFetchedResultSetTests) {
   coreDataStack = [CoreDataTestStack inMemoryTestStack];
 }
 
+#pragma mark - General
+
 - (void)testEmptyResultSetHasNoObjects
 {
   NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
@@ -42,6 +44,8 @@ DEFINE_TEST_CASE(LRFetchedResultSetTests) {
   
   expect(resultSet.count).to.equal(1);
 }
+
+#pragma mark - Insertion tests
 
 - (void)testResultSetNotifiesWhenMatchingEntitiesAreAddedToTheContext
 {
@@ -102,22 +106,75 @@ DEFINE_TEST_CASE(LRFetchedResultSetTests) {
   expect(insertedObjects).willNot.contain(oldPerson);
 }
 
-- (void)testResultSetAlwaysHasLatestRelevantResults
+- (void)testResultSetAlwaysHasLatestRelevantResultsAfterInsert
 {
   NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
   
   LRFetchedResultSet *resultSet = [coreDataStack.mainContext LR_executeFetchRequestAndReturnResultSet:fetchRequest error:nil];
   
-  __block BOOL changeFired = NO;
+  __block BOOL notificationReceived = NO;
   
   [resultSet notifyChangesUsingBlock:^(NSDictionary *changes) {
-    changeFired = YES;
+    notificationReceived = YES;
   }];
   
   NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
   
-  when(changeFired, ^{
+  when(notificationReceived, ^{
     expect(resultSet.objects).to.contain(person);
+  });
+}
+
+#pragma mark - Update tests
+
+- (void)testResultSetNotifiesWhenObjectInResultSetIsUpdated
+{
+  NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  
+  NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
+  
+  LRFetchedResultSet *resultSet = [coreDataStack.mainContext LR_executeFetchRequestAndReturnResultSet:fetchRequest error:nil];
+  
+  __block BOOL notificationReceived = NO;
+  
+  [resultSet notifyChangesUsingBlock:^(NSDictionary *changes) {
+    notificationReceived = YES;
+  }];
+  
+  [person setValue:@"Joe Bloggs" forKeyPath:@"name"];
+  
+  when(notificationReceived, ^{
+    expect([resultSet[0] valueForKey:@"name"]).to.equal(@"Joe Bloggs");
+  });
+}
+
+- (void)testResultSetNotifiesWhenObjectInResultSetIsUpdatedFromChangesMergedFromAnotherContext
+{
+  NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  [coreDataStack.mainContext save:nil];
+  
+  NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
+  
+  LRFetchedResultSet *resultSet = [coreDataStack.mainContext LR_executeFetchRequestAndReturnResultSet:fetchRequest error:nil];
+  
+  __block BOOL notificationReceived = NO;
+  
+  [resultSet notifyChangesUsingBlock:^(NSDictionary *changes) {
+    notificationReceived = YES;
+  }];
+  
+  NSManagedObjectContext *backgroundContext = [coreDataStack newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType];
+  
+  [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextDidSaveNotification object:backgroundContext queue:nil usingBlock:^(NSNotification *note) {
+    [coreDataStack.mainContext mergeChangesFromContextDidSaveNotification:note];
+  }];
+  
+  NSManagedObject *personFromBackgroundContext = [backgroundContext objectWithID:person.objectID];
+  [personFromBackgroundContext setValue:@"Joe Bloggs" forKeyPath:@"name"];
+  [backgroundContext save:nil];
+  
+  when(notificationReceived, ^{
+    expect([resultSet[0] valueForKey:@"name"]).to.equal(@"Joe Bloggs");
   });
 }
 

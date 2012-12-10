@@ -18,8 +18,8 @@
 		A38665C11676180D0099BD04 /* CoreDataTestStack.m in Sources */ = {isa = PBXBuildFile; fileRef = A38665C01676180D0099BD04 /* CoreDataTestStack.m */; };
 		A38665C41676184D0099BD04 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A38665C31676184D0099BD04 /* CoreData.framework */; };
 		A38665C5167618560099BD04 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A38665C31676184D0099BD04 /* CoreData.framework */; };
-		A386662B1676191F0099BD04 /* libExpecta-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A38666251676190C0099BD04 /* libExpecta-iOS.a */; };
 		A386662E167619C20099BD04 /* LRManagedObjectModelBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = A386662D167619C20099BD04 /* LRManagedObjectModelBuilder.m */; };
+		A386663016764DF60099BD04 /* libExpecta-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A38666251676190C0099BD04 /* libExpecta-iOS.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,7 +108,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A386662B1676191F0099BD04 /* libExpecta-iOS.a in Frameworks */,
+				A386663016764DF60099BD04 /* libExpecta-iOS.a in Frameworks */,
 				A38665A5167617910099BD04 /* SenTestingKit.framework in Frameworks */,
 				A38665A8167617910099BD04 /* Foundation.framework in Frameworks */,
 				A38665AB167617910099BD04 /* libLRFetchedResultSet.a in Frameworks */,
