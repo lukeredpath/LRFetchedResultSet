@@ -77,7 +77,7 @@
   [relevantChanges setObject:relevantDeletedObjects forKey:NSDeletedObjectsKey];
   [newObjects removeObjectsInArray:[relevantDeletedObjects allObjects]];
   
-  _objects = [newObjects copy];
+  _objects = [newObjects sortedArrayUsingDescriptors:_fetchRequest.sortDescriptors];
   
   self.changeBlock(relevantChanges);
 }

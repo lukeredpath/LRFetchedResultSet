@@ -125,6 +125,43 @@ DEFINE_TEST_CASE(LRFetchedResultSetTests) {
   });
 }
 
+- (void)testResultSetPreservesSortOrderWhenObjectsAreAdded
+{
+  NSManagedObject *personOne = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  
+  [personOne setValue:@"Person B" forKey:@"name"];
+  
+  NSManagedObject *personTwo = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  
+  [personTwo setValue:@"Person C" forKey:@"name"];
+  
+  [coreDataStack.mainContext save:nil];
+  
+  NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
+  fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+  
+  LRFetchedResultSet *resultSet = [coreDataStack.mainContext LR_executeFetchRequestAndReturnResultSet:fetchRequest error:nil];
+  
+  NSArray *orderedObjects = @[personOne, personTwo];
+  expect(resultSet.objects).to.equal(orderedObjects);
+  
+  __block BOOL notificationReceived = NO;
+  
+  [resultSet notifyChangesUsingBlock:^(NSDictionary *changes) {
+    notificationReceived = YES;
+  }];
+  
+  NSManagedObject *newPerson = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  
+  [newPerson setValue:@"Person A" forKey:@"name"];
+  
+  NSArray *expected = @[newPerson, personOne, personTwo];
+  
+  when(notificationReceived, ^{
+    expect(resultSet.objects).to.equal(expected);
+  });
+}
+
 #pragma mark - Update tests
 
 - (void)testResultSetNotifiesWhenObjectInResultSetIsUpdated
@@ -247,5 +284,45 @@ DEFINE_TEST_CASE(LRFetchedResultSetTests) {
     expect(resultSet.objects).notTo.contain(person);
   });
 }
+
+- (void)testResultSetPreservesSortOrderWhenObjectsAreDeleted
+{
+  NSManagedObject *personOne = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  
+  [personOne setValue:@"Person A" forKey:@"name"];
+  
+  NSManagedObject *personTwo = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  
+  [personTwo setValue:@"Person B" forKey:@"name"];
+  
+  NSManagedObject *personThree = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  
+  [personThree setValue:@"Person C" forKey:@"name"];
+  
+  [coreDataStack.mainContext save:nil];
+  
+  NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
+  fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+  
+  LRFetchedResultSet *resultSet = [coreDataStack.mainContext LR_executeFetchRequestAndReturnResultSet:fetchRequest error:nil];
+  
+  NSArray *orderedObjects = @[personOne, personTwo, personThree];
+  expect(resultSet.objects).to.equal(orderedObjects);
+  
+  __block BOOL notificationReceived = NO;
+  
+  [resultSet notifyChangesUsingBlock:^(NSDictionary *changes) {
+    notificationReceived = YES;
+  }];
+  
+  [coreDataStack.mainContext deleteObject:personOne];
+  
+  NSArray *expected = @[personTwo, personThree];
+  
+  when(notificationReceived, ^{
+    expect(resultSet.objects).to.equal(expected);
+  });
+}
+
 
 END_TEST_CASE
