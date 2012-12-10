@@ -178,4 +178,74 @@ DEFINE_TEST_CASE(LRFetchedResultSetTests) {
   });
 }
 
+#pragma mark - Deletion tests
+
+- (void)testResultSetNotifiesObjectsInTheResultSetAreDeleted
+{
+  NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  [coreDataStack.mainContext save:nil];
+  
+  NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
+  
+  LRFetchedResultSet *resultSet = [coreDataStack.mainContext LR_executeFetchRequestAndReturnResultSet:fetchRequest error:nil];
+  
+  __block NSSet *deletedObjects = [NSSet set];
+  
+  [resultSet notifyChangesUsingBlock:^(NSDictionary *changes) {
+    deletedObjects = [changes objectForKey:NSDeletedObjectsKey];
+  }];
+  
+  [coreDataStack.mainContext deleteObject:person];
+  
+  expect(deletedObjects).will.contain(person);
+}
+
+- (void)testResultSetDoesntNotifyWhenNonMatchingObjectsAreDeleted
+{
+  NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  
+  NSManagedObject *company = [NSEntityDescription insertNewObjectForEntityForName:@"Company" inManagedObjectContext:coreDataStack.mainContext];
+  
+  [coreDataStack.mainContext save:nil];
+  
+  NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
+  
+  LRFetchedResultSet *resultSet = [coreDataStack.mainContext LR_executeFetchRequestAndReturnResultSet:fetchRequest error:nil];
+  
+  __block NSSet *deletedObjects = [NSSet set];
+  
+  [resultSet notifyChangesUsingBlock:^(NSDictionary *changes) {
+    deletedObjects = [changes objectForKey:NSDeletedObjectsKey];
+  }];
+  
+  [coreDataStack.mainContext deleteObject:person];
+  [coreDataStack.mainContext deleteObject:company];
+  
+  expect(deletedObjects).will.contain(person);
+  expect(deletedObjects).willNot.contain(company);
+}
+
+- (void)testResultSetAlwaysHasLatestRelevantResultsAfterDeletion
+{
+  NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  
+  [coreDataStack.mainContext save:nil];
+  
+  NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
+  
+  LRFetchedResultSet *resultSet = [coreDataStack.mainContext LR_executeFetchRequestAndReturnResultSet:fetchRequest error:nil];
+  
+  __block BOOL notificationReceived = NO;
+  
+  [resultSet notifyChangesUsingBlock:^(NSDictionary *changes) {
+    notificationReceived = YES;
+  }];
+  
+  [coreDataStack.mainContext deleteObject:person];
+  
+  when(notificationReceived, ^{
+    expect(resultSet.objects).notTo.contain(person);
+  });
+}
+
 END_TEST_CASE

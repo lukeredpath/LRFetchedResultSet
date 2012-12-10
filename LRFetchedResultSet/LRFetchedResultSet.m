@@ -68,6 +68,15 @@
     [newObjects addObjectsFromArray:[relevantInsertedObjects allObjects]];
   }
   
+  NSMutableSet *relevantDeletedObjects = [NSMutableSet set];
+  for (NSManagedObject *object in [changes objectForKey:NSDeletedObjectsKey]) {
+    if ([_objects containsObject:object]) {
+      [relevantDeletedObjects addObject:object];
+    }
+  }
+  [relevantChanges setObject:relevantDeletedObjects forKey:NSDeletedObjectsKey];
+  [newObjects removeObjectsInArray:[relevantDeletedObjects allObjects]];
+  
   _objects = [newObjects copy];
   
   self.changeBlock(relevantChanges);
