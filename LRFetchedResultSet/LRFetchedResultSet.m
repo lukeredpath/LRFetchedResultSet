@@ -17,6 +17,7 @@
 @implementation LRFetchedResultSet {
   NSFetchRequest *_fetchRequest;
   NSManagedObjectContext *_managedObjectContext;
+  BOOL _isObserving;
 }
 
 - (id)initWithObjects:(NSArray *)objects fetchRequest:(NSFetchRequest *)fetchRequest managedObjectContext:(NSManagedObjectContext *)context;
@@ -38,6 +39,13 @@
     [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextObjectsDidChangeNotification object:_managedObjectContext queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *note) {
       [self handleChangesToManagedObjectContext:note.userInfo];
     }];
+    _isObserving = YES;
+  }
+  else {
+    if (_isObserving) {
+      [[NSNotificationCenter defaultCenter] removeObserver:self];
+      _isObserving = NO;
+    }
   }
 }
 
