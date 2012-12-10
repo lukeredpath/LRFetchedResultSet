@@ -123,6 +123,9 @@
 - (LRFetchedResultSet *)LR_executeFetchRequestAndReturnResultSet:(NSFetchRequest *)fetchRequest error:(NSError **)errorPtr;
 {
   NSArray *results = [self executeFetchRequest:fetchRequest error:errorPtr];
+  
+  if (results == nil) return nil;
+  
   return [[LRFetchedResultSet alloc] initWithObjects:results fetchRequest:fetchRequest managedObjectContext:self];
 }
 
