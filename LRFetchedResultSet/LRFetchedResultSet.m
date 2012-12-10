@@ -31,6 +31,13 @@
   return self;
 }
 
+- (void)dealloc
+{
+  if (_isObserving) {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+  }
+}
+
 - (void)notifyChangesUsingBlock:(LRFetchedResultSetChangeBlock)changeBlock
 {
   self.changeBlock = changeBlock;
