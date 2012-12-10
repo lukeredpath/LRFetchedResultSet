@@ -59,8 +59,6 @@
 {
   NSMutableArray *newObjects = [NSMutableArray arrayWithArray:self.objects];
   
-  NSLog(@"%@", changes);
-  
   NSMutableDictionary *relevantChanges = [NSMutableDictionary dictionary];
   
   NSSet *relevantInsertedObjects = [[changes objectForKey:NSInsertedObjectsKey] filteredSetUsingPredicate:self.relevancyPredicate];
