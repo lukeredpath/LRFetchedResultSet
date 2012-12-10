@@ -168,24 +168,24 @@ DEFINE_TEST_CASE(LRFetchedResultSetTests) {
 {
   NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
   
+  [coreDataStack.mainContext save:nil];
+  
   NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
   
   LRFetchedResultSet *resultSet = [coreDataStack.mainContext LR_executeFetchRequestAndReturnResultSet:fetchRequest error:nil];
   
-  __block BOOL notificationReceived = NO;
+  __block NSSet *updatedObjects = [NSSet set];
   
   [resultSet notifyChangesUsingBlock:^(NSDictionary *changes) {
-    notificationReceived = YES;
+    updatedObjects = [changes objectForKey:NSUpdatedObjectsKey];
   }];
   
   [person setValue:@"Joe Bloggs" forKeyPath:@"name"];
   
-  when(notificationReceived, ^{
-    expect([resultSet[0] valueForKey:@"name"]).to.equal(@"Joe Bloggs");
-  });
+  expect(updatedObjects).will.contain(person);
 }
 
-- (void)testResultSetNotifiesWhenObjectInResultSetIsUpdatedFromChangesMergedFromAnotherContext
+- (void)testResultSetNotifiesWhenObjectInResultSetIsRefreshedFromChangesMergedFromAnotherContext
 {
   NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
   [coreDataStack.mainContext save:nil];
@@ -194,10 +194,10 @@ DEFINE_TEST_CASE(LRFetchedResultSetTests) {
   
   LRFetchedResultSet *resultSet = [coreDataStack.mainContext LR_executeFetchRequestAndReturnResultSet:fetchRequest error:nil];
   
-  __block BOOL notificationReceived = NO;
+  __block NSSet *updatedObjects = [NSSet set];
   
   [resultSet notifyChangesUsingBlock:^(NSDictionary *changes) {
-    notificationReceived = YES;
+    updatedObjects = [changes objectForKey:NSRefreshedObjectsKey];
   }];
   
   NSManagedObjectContext *backgroundContext = [coreDataStack newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType];
@@ -209,6 +209,25 @@ DEFINE_TEST_CASE(LRFetchedResultSetTests) {
   NSManagedObject *personFromBackgroundContext = [backgroundContext objectWithID:person.objectID];
   [personFromBackgroundContext setValue:@"Joe Bloggs" forKeyPath:@"name"];
   [backgroundContext save:nil];
+  
+  expect(updatedObjects).will.contain(person);
+}
+
+- (void)testResultSetAlwaysHasLatestChangesAfterUpdate
+{
+  NSManagedObject *person = [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:coreDataStack.mainContext];
+  
+  NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Person"];
+  
+  LRFetchedResultSet *resultSet = [coreDataStack.mainContext LR_executeFetchRequestAndReturnResultSet:fetchRequest error:nil];
+  
+  __block BOOL notificationReceived = NO;
+  
+  [resultSet notifyChangesUsingBlock:^(NSDictionary *changes) {
+    notificationReceived = YES;
+  }];
+  
+  [person setValue:@"Joe Bloggs" forKeyPath:@"name"];
   
   when(notificationReceived, ^{
     expect([resultSet[0] valueForKey:@"name"]).to.equal(@"Joe Bloggs");

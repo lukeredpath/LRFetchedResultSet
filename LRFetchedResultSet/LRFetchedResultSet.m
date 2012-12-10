@@ -59,6 +59,8 @@
 {
   NSMutableArray *newObjects = [NSMutableArray arrayWithArray:self.objects];
   
+  NSLog(@"%@", changes);
+  
   NSMutableDictionary *relevantChanges = [NSMutableDictionary dictionary];
   
   NSSet *relevantInsertedObjects = [[changes objectForKey:NSInsertedObjectsKey] filteredSetUsingPredicate:self.relevancyPredicate];
@@ -67,6 +69,22 @@
     [relevantChanges setObject:relevantInsertedObjects forKey:NSInsertedObjectsKey];
     [newObjects addObjectsFromArray:[relevantInsertedObjects allObjects]];
   }
+  
+  NSMutableSet *relevantUpdatedObjects = [NSMutableSet set];
+  for (NSManagedObject *object in [changes objectForKey:NSUpdatedObjectsKey]) {
+    if ([_objects containsObject:object]) {
+      [relevantUpdatedObjects addObject:object];
+    }
+  }
+  [relevantChanges setObject:relevantUpdatedObjects forKey:NSUpdatedObjectsKey];
+  
+  NSMutableSet *relevantRefreshedObjects = [NSMutableSet set];
+  for (NSManagedObject *object in [changes objectForKey:NSRefreshedObjectsKey]) {
+    if ([_objects containsObject:object]) {
+      [relevantRefreshedObjects addObject:object];
+    }
+  }
+  [relevantChanges setObject:relevantRefreshedObjects forKey:NSRefreshedObjectsKey];
   
   NSMutableSet *relevantDeletedObjects = [NSMutableSet set];
   for (NSManagedObject *object in [changes objectForKey:NSDeletedObjectsKey]) {
