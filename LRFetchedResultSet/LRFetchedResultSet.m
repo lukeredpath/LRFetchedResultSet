@@ -12,12 +12,14 @@
 
 @property (nonatomic, copy) LRFetchedResultSetChangeBlock changeBlock;
 
+- (void)reexecuteFetchRequest;
+
 @end
 
 @implementation LRFetchedResultSet {
   NSFetchRequest *_fetchRequest;
   NSManagedObjectContext *_managedObjectContext;
-  BOOL _isObserving;
+  id _contextObserver;
 }
 
 - (id)initWithObjects:(NSArray *)objects fetchRequest:(NSFetchRequest *)fetchRequest managedObjectContext:(NSManagedObjectContext *)context;
@@ -33,8 +35,22 @@
 
 - (void)dealloc
 {
-  if (_isObserving) {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+  if (_contextObserver) {
+    [[NSNotificationCenter defaultCenter] removeObserver:_contextObserver];
+  }
+}
+
+- (void)setAlwaysObservesChanges:(BOOL)alwaysObservesChanges
+{
+  _alwaysObservesChanges = alwaysObservesChanges;
+  
+  if (_alwaysObservesChanges) {
+    [self startObservingChanges];
+  }
+  else {
+    if (self.changeBlock == nil) {
+      [self stopObservingChanges];
+    }
   }
 }
 
@@ -42,17 +58,45 @@
 {
   self.changeBlock = changeBlock;
   
-  if (self.changeBlock != nil) {
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextObjectsDidChangeNotification object:_managedObjectContext queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *note) {
-      [self handleChangesToManagedObjectContext:note.userInfo];
-    }];
-    _isObserving = YES;
+  if (self.changeBlock || self.alwaysObservesChanges) {
+    [self startObservingChanges];
   }
   else {
-    if (_isObserving) {
-      [[NSNotificationCenter defaultCenter] removeObserver:self];
-      _isObserving = NO;
-    }
+    [self stopObservingChanges];
+  }
+}
+
+- (void)startObservingChanges
+{
+  if (_contextObserver) return;
+  
+  __weak id weakSelf = self;
+  
+  _contextObserver = [[NSNotificationCenter defaultCenter] addObserverForName:NSManagedObjectContextObjectsDidChangeNotification object:_managedObjectContext queue:NSOperationQueue.mainQueue usingBlock:^(NSNotification *note) {
+    [weakSelf handleChangesToManagedObjectContext:note.userInfo];
+  }];
+}
+
+- (void)stopObservingChanges
+{
+  if (_contextObserver) {
+    [[NSNotificationCenter defaultCenter] removeObserver:_contextObserver];
+    _contextObserver = nil;
+  }
+}
+
+- (void)setObjects:(NSArray *)objects
+{
+  BOOL countChanged = (objects.count != _objects.count);
+  
+  if (countChanged) {
+    [self willChangeValueForKey:@"count"];
+  }
+  
+  _objects = objects;
+  
+  if (countChanged) {
+    [self didChangeValueForKey:@"count"];
   }
 }
 
@@ -78,36 +122,40 @@
   
   NSSet *relevantInsertedObjects = [[changes objectForKey:NSInsertedObjectsKey] filteredSetUsingPredicate:self.relevancyPredicate];
   
-  if (relevantInsertedObjects) {
+  if (relevantInsertedObjects.count > 0) {
     [relevantChanges setObject:relevantInsertedObjects forKey:NSInsertedObjectsKey];
     [newObjects addObjectsFromArray:[relevantInsertedObjects allObjects]];
   }
   
   NSMutableSet *relevantUpdatedObjects = [[changes objectForKey:NSUpdatedObjectsKey] mutableCopy];
   
-  if (relevantUpdatedObjects) {
+  if (relevantUpdatedObjects.count) {
     [relevantUpdatedObjects intersectSet:[NSSet setWithArray:self.objects]];
     [relevantChanges setObject:relevantUpdatedObjects forKey:NSUpdatedObjectsKey];
   }
   
   NSMutableSet *relevantRefreshedObjects = [[changes objectForKey:NSRefreshedObjectsKey] mutableCopy];
   
-  if (relevantRefreshedObjects) {
+  if (relevantRefreshedObjects.count) {
     [relevantRefreshedObjects intersectSet:[NSSet setWithArray:self.objects]];
     [relevantChanges setObject:relevantRefreshedObjects forKey:NSRefreshedObjectsKey];
   }
   
   NSMutableSet *relevantDeletedObjects = [[changes objectForKey:NSDeletedObjectsKey] mutableCopy];
   
-  if (relevantDeletedObjects) {
+  if (relevantDeletedObjects.count) {
     [relevantDeletedObjects intersectSet:[NSSet setWithArray:self.objects]];
     [relevantChanges setObject:relevantDeletedObjects forKey:NSDeletedObjectsKey];
     [newObjects removeObjectsInArray:[relevantDeletedObjects allObjects]];
   }
   
-  _objects = [newObjects sortedArrayUsingDescriptors:_fetchRequest.sortDescriptors];
-  
-  self.changeBlock(relevantChanges);
+  if (relevantChanges.count > 0) {
+    [self setObjects:[newObjects sortedArrayUsingDescriptors:_fetchRequest.sortDescriptors]];
+    
+    if (self.changeBlock) {
+      self.changeBlock(relevantChanges);
+    }
+  }
 }
 
 - (NSPredicate *)entityPredicate
@@ -121,6 +169,50 @@
     return self.entityPredicate;
   }
   return [NSCompoundPredicate andPredicateWithSubpredicates:@[self.entityPredicate, _fetchRequest.predicate]];
+}
+
+- (void)reexecuteFetchRequest
+{
+  NSError *error;
+  
+  [self setObjects:[_managedObjectContext executeFetchRequest:_fetchRequest error:&error]];
+  
+  if (error) {
+    // TODO: handle error
+  }
+  if (self.changeBlock) {
+    self.changeBlock(@{});
+  }
+}
+
+@end
+
+@implementation LRFetchedResultSet (ForSubclassersOnly)
+
+- (void)reexecuteFetchRequestWithPredicate:(NSPredicate *)predicate
+{
+  _fetchRequest.predicate = predicate;
+  [self reexecuteFetchRequest];
+}
+
+- (void)reexecuteFetchRequestWithAndPredicate:(NSPredicate *)predicate
+{
+  if (_fetchRequest.predicate == nil) {
+    [self reexecuteFetchRequestWithPredicate:predicate];
+  }
+  else {
+    [self reexecuteFetchRequestWithPredicate:[NSCompoundPredicate andPredicateWithSubpredicates:@[_fetchRequest.predicate, predicate]]];
+  }
+}
+
+- (void)reexecuteFetchRequestWithOrPredicate:(NSPredicate *)predicate
+{
+  if (_fetchRequest.predicate == nil) {
+    [self reexecuteFetchRequestWithPredicate:predicate];
+  }
+  else {
+    [self reexecuteFetchRequestWithPredicate:[NSCompoundPredicate orPredicateWithSubpredicates:@[_fetchRequest.predicate, predicate]]];
+  }
 }
 
 @end

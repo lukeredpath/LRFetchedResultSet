@@ -505,6 +505,7 @@
 				A38665B9167617910099BD04 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A38665BA167617910099BD04 /* Build configuration list for PBXNativeTarget "LRFetchedResultSetTests" */ = {
 			isa = XCConfigurationList;
@@ -513,6 +514,7 @@
 				A38665BC167617910099BD04 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
