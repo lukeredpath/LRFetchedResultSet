@@ -14,6 +14,7 @@ typedef void (^LRFetchedResultSetChangeBlock)(NSDictionary *changeBlock);
 
 @property (nonatomic, readonly) NSArray *objects;
 @property (nonatomic, readonly) NSInteger count;
+@property (nonatomic, readonly) NSFetchRequest *fetchRequest;
 
 /* If set to YES, will continuously observe changes to its
  * results, even if a change block has not been set.

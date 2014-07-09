@@ -22,6 +22,8 @@
   id _contextObserver;
 }
 
+@synthesize fetchRequest = _fetchRequest;
+
 - (id)initWithObjects:(NSArray *)objects fetchRequest:(NSFetchRequest *)fetchRequest managedObjectContext:(NSManagedObjectContext *)context;
 {
   self = [super init];
@@ -116,22 +118,43 @@
 
 - (void)handleChangesToManagedObjectContext:(NSDictionary *)changes
 {
+  if ([changes objectForKey:NSInvalidatedAllObjectsKey]) {
+    /* All objects in the managed object context are invalidated
+     * so we should re-run our fetch request.
+     */
+    return [self reexecuteFetchRequest];
+  }
+  
   NSMutableArray *newObjects = [NSMutableArray arrayWithArray:self.objects];
   
   NSMutableDictionary *relevantChanges = [NSMutableDictionary dictionary];
   
-  NSSet *relevantInsertedObjects = [[changes objectForKey:NSInsertedObjectsKey] filteredSetUsingPredicate:self.relevancyPredicate];
+  NSMutableSet *relevantUpdatedObjects = [[[changes objectForKey:NSUpdatedObjectsKey] filteredSetUsingPredicate:self.relevancyPredicate] mutableCopy];
   
-  if (relevantInsertedObjects.count > 0) {
-    [relevantChanges setObject:relevantInsertedObjects forKey:NSInsertedObjectsKey];
-    [newObjects addObjectsFromArray:[relevantInsertedObjects allObjects]];
-  }
+  NSMutableSet *updatedObjectsThatWereNotPartOfPreviousResults = [relevantUpdatedObjects mutableCopy];
+  [updatedObjectsThatWereNotPartOfPreviousResults minusSet:[NSSet setWithArray:self.objects]];
   
-  NSMutableSet *relevantUpdatedObjects = [[changes objectForKey:NSUpdatedObjectsKey] mutableCopy];
+  NSMutableSet *updatedObjectsThatShouldNoLongerBeIncludedInResults = [[changes objectForKey:NSUpdatedObjectsKey] mutableCopy];
+  [updatedObjectsThatShouldNoLongerBeIncludedInResults minusSet:relevantUpdatedObjects];
+  [updatedObjectsThatShouldNoLongerBeIncludedInResults intersectSet:[NSSet setWithArray:self.objects]];
   
   if (relevantUpdatedObjects.count) {
     [relevantUpdatedObjects intersectSet:[NSSet setWithArray:self.objects]];
     [relevantChanges setObject:relevantUpdatedObjects forKey:NSUpdatedObjectsKey];
+  }
+  
+  NSMutableSet *relevantInsertedObjects = [[[changes objectForKey:NSInsertedObjectsKey] filteredSetUsingPredicate:self.relevancyPredicate] mutableCopy];
+  
+  if (relevantInsertedObjects == nil) {
+    relevantInsertedObjects = updatedObjectsThatWereNotPartOfPreviousResults;
+  }
+  else {
+    [relevantInsertedObjects unionSet:updatedObjectsThatWereNotPartOfPreviousResults];
+  }
+  
+  if (relevantInsertedObjects.count > 0) {
+    [relevantChanges setObject:relevantInsertedObjects forKey:NSInsertedObjectsKey];
+    [newObjects addObjectsFromArray:[relevantInsertedObjects allObjects]];
   }
   
   NSMutableSet *relevantRefreshedObjects = [[changes objectForKey:NSRefreshedObjectsKey] mutableCopy];
@@ -143,8 +166,15 @@
   
   NSMutableSet *relevantDeletedObjects = [[changes objectForKey:NSDeletedObjectsKey] mutableCopy];
   
+  [relevantDeletedObjects intersectSet:[NSSet setWithArray:self.objects]];
+  
+  if (relevantDeletedObjects == nil) {
+    relevantDeletedObjects = [NSMutableSet set];
+  }
+  
+  [relevantDeletedObjects unionSet:updatedObjectsThatShouldNoLongerBeIncludedInResults];
+  
   if (relevantDeletedObjects.count) {
-    [relevantDeletedObjects intersectSet:[NSSet setWithArray:self.objects]];
     [relevantChanges setObject:relevantDeletedObjects forKey:NSDeletedObjectsKey];
     [newObjects removeObjectsInArray:[relevantDeletedObjects allObjects]];
   }
